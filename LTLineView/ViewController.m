@@ -70,7 +70,7 @@
 
 - (void)showLineView {
     LTLine *lineView = [[LTLine alloc]initWithFrame:({
-        CGRect rect = {0,0,kScreenWidth,kLTLineViewHeight};
+        CGRect rect = {0,0,kScreenWidth,kScreenHeight};
         rect;
     })];
     lineView.realPoints = self.weightData;

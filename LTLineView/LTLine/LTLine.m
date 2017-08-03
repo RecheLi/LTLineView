@@ -10,11 +10,11 @@
 
 @interface LTLine () <UIScrollViewDelegate>
 
-@property (weak, nonatomic) UIButton *titleButton;
+@property (strong, nonatomic) UIButton *titleButton;
 
-@property (weak, nonatomic) UIButton *weightButton;
+@property (strong, nonatomic) UIButton *weightButton;
 
-@property (weak, nonatomic) UIImageView *baseLineImageView;
+@property (strong, nonatomic) UIImageView *baseLineImageView;
 
 @property (strong, nonatomic) CAShapeLayer *markPoint;
 
@@ -66,6 +66,45 @@
     return _backImageView;
 }
 
+- (UIButton *)weightButton {
+    if (!_weightButton) {
+        _weightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _weightButton.origin = CGPointMake(0, kLTLineViewTopMargin);
+        _weightButton.size = CGSizeMake(70, kLTLineViewWeightButtonHeight);
+        _weightButton.userInteractionEnabled = NO;
+        _weightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+        _weightButton.titleEdgeInsets = UIEdgeInsetsMake(-2, 0, 2, 0);
+        [_weightButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_weightButton setBackgroundImage:[UIImage imageNamed:@"数值背景"] forState:UIControlStateNormal];
+    }
+    return _weightButton;
+}
+
+- (UIImageView *)baseLineImageView {
+    if (!_baseLineImageView) {
+        _baseLineImageView = [UIImageView new];
+        _baseLineImageView.origin = CGPointMake(0, _weightButton.bottom);
+        _baseLineImageView.size = CGSizeMake(4, self.height-_weightButton.bottom-kLTLineViewDateViewHeight);
+        _baseLineImageView.image = [UIImage imageNamed:@"选中-线"];
+    }
+    return _baseLineImageView;
+}
+
+- (UIButton *)titleButton {
+    if (!_titleButton) {
+        CGFloat paddingRight = 25.0, titleButtonWidth = 91.0, titleButtonHeight = 16.5;
+        _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _titleButton.size = CGSizeMake(titleButtonWidth, titleButtonHeight);
+        _titleButton.origin = CGPointMake(kScreenWidth-_titleButton.width-paddingRight, 0);
+        _titleButton.titleLabel.font = [UIFont systemFontOfSize:12];
+        [_titleButton setImage:[UIImage imageNamed:@"预测减重线"] forState:UIControlStateNormal];
+        [_titleButton setTitle:@"预测减重线" forState:UIControlStateNormal];
+        [_titleButton setTitleColor:_dashlineColor forState:UIControlStateNormal];
+        _titleButton.titleEdgeInsets = UIEdgeInsetsMake(0, 5, 0, -5);
+    }
+    return _titleButton;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -75,6 +114,7 @@
 }
 
 - (void)commonInit {
+    self.height = (self.height!=kLTLineScrollViewHeight()) ? kLTLineScrollViewHeight() : self.height;
     _hideDashLine = NO;
     _dashlineWidth = 2.0;
     _reallineWidth = 4.0;
@@ -97,39 +137,16 @@
     [self addSubview:self.lineScollView];
     
     // 体重值
-    UIButton *weightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    weightButton.origin = CGPointMake(0, kLTLineViewTopMargin);
-    weightButton.size = CGSizeMake(70, kLTLineViewWeightButtonHeight);
-    weightButton.userInteractionEnabled = NO;
-    weightButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    weightButton.titleEdgeInsets = UIEdgeInsetsMake(-2, 0, 2, 0);
-    [weightButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [weightButton setBackgroundImage:[UIImage imageNamed:@"数值背景"] forState:UIControlStateNormal];
-    [self addSubview:weightButton];
-    self.weightButton = weightButton;
+    [self addSubview:self.weightButton];
     _weightButton.centerX = kScreenWidth/2.0;
     
     // 基准线背景
-    UIImageView *baselineView = [UIImageView new];
-    baselineView.origin = CGPointMake(0, _weightButton.bottom);
-    baselineView.size = CGSizeMake(4, self.height-_weightButton.bottom-kLTLineViewDateViewHeight);
-    baselineView.image = [UIImage imageNamed:@"选中-线"];
-    [self addSubview:baselineView];
-    self.baseLineImageView = baselineView;
+    [self addSubview:self.baseLineImageView];
     _baseLineImageView.centerX = _weightButton.centerX;
     
     // 预测减重线标题
-    CGFloat paddingRight = 25.0, titleButtonWidth = 91.0, titleButtonHeight = 16.5;
-    UIButton *titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    titleButton.size = CGSizeMake(titleButtonWidth, titleButtonHeight);
-    titleButton.origin = CGPointMake(kScreenWidth-titleButton.width-paddingRight, 0);
-    titleButton.titleLabel.font = [UIFont systemFontOfSize:12];
-    [titleButton setImage:[UIImage imageNamed:@"预测减重线"] forState:UIControlStateNormal];
-    [titleButton setTitle:@"预测减重线" forState:UIControlStateNormal];
-    [titleButton setTitleColor:_dashlineColor forState:UIControlStateNormal];
-    titleButton.titleEdgeInsets = UIEdgeInsetsMake(0, 5, 0, -5);
-    [self addSubview:titleButton];
-    self.titleButton = titleButton;
+
+    [self addSubview:self.titleButton];
     _titleButton.centerY = _weightButton.centerY;
     
     // 标记点
